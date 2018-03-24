@@ -154,6 +154,7 @@ class MusicBoard:
 
 	def play(self, sound):
 		channelObj = pygame.mixer.Channel(sound.id)
+		print("Volume = ", sound.volume)
 		channelObj.set_volume(sound.volume)
 		channelObj.play(sound.sound, loops = -1)
 
@@ -204,7 +205,7 @@ class MusicBoard:
 
 if __name__ == '__main__':
 	# row, col, minFreq, maxFreq, minAmp, maxAmp
-	b = MusicBoard(5, 5, 0.5, 1.5, 0.5, 1)
+	b = MusicBoard(5, 5, 0.5, 1.5, 0.2, 1)
 
 	b.add('./sounds/High-Agogo.wav', 2, 0)
 	

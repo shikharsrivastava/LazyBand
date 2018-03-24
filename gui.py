@@ -36,8 +36,8 @@ SOUND_INX = ENDING_X + GAP
 SOUND_EX = SOUND_INX + SOUND_BOARD_LENGTH
 
 DISPLAY.fill(BLACK)
-GRID_ROW = 5
-GRID_COLUMN = 5
+GRID_ROW = 8
+GRID_COLUMN = 8
 SOUND_ROW = 5
 SOUND_COLUMN = 2
 
@@ -79,7 +79,7 @@ def get_position(mx, my):
 
 if __name__ == '__main__':
  
-    lazyband_board = MusicBoard(GRID_ROW, GRID_COLUMN, 0.5, 2.0, 0.5, 1.0)
+    lazyband_board = MusicBoard(GRID_ROW, GRID_COLUMN, 0.3, 1.25, 0.2, 1.0)
     draw_board()
     #draw_sounds(2)
 
