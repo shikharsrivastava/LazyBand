@@ -2,7 +2,7 @@ import socket
 
 
 HOST = '192.168.43.62'
-PORT = 8400
+PORT = 8401
 
 def send_data(sock,data):
 	sock.sendall(data)

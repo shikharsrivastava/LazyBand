@@ -171,7 +171,7 @@ class MusicBoard:
 		sound = self.board[x][y].pop()
 		pygame.mixer.Channel(sound.id).stop()
 
-		self.broadcast(sound, "del")
+		self.broadcast(x, y, sound, "del")
 
 		self.freeIds.add(sound.id)
 
