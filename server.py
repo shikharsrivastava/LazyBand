@@ -29,6 +29,7 @@ def send_to_client(sock,q):
 		data = q.get()
 		if data == None:
 			break
+		print("Message sent")
 		utils.send_message(sock,data)
 
 

@@ -89,16 +89,21 @@ class MusicBoard:
 		current_time = time.time()		
 		e = 0.01
 		
+		print("In add time")
 		while True:
 			t = time.time()
+			print("trying to add", str(t))
 			if abs( t - int(t) - ahead) <= e:
 				self.add(soundName, x, y, True)
+				print("added")
 				break	
 
 
 
 
 	def addLater(self, soundName, x, y, ahead):
+		print("In add later")
+
 		t = threading.Thread(target = self.addOnTime, args = [soundName, x, y, ahead])
 		t.start()
 
@@ -120,6 +125,8 @@ class MusicBoard:
 	def receive(self):
 		message = utils.receive_message(self.sock)
 		data = json.loads(message)
+		print("received")
+		print(message)
 
 		if(data['op'] == 'add'):
 			self.addLater(data['name'], data['x'], data['y'], data['ahead'])
@@ -176,7 +183,8 @@ class MusicBoard:
 
 		# get relative time from epoch
 		
-
+		if broadcasted:
+			print("reveived broadcast sound")
 		vol, dur = self.getCellInfo(x, y)
 
 		id = self.getFreeId()
