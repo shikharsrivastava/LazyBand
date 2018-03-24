@@ -3,7 +3,7 @@ import time
 import pygame
 import numpy
 import utils
-import sockets
+import socket
 import threading
 import json
 
@@ -73,12 +73,34 @@ class MusicBoard:
 		self.t = threading.Thread(target = self.receive)
 		self.t.start()
 
-		self.EPOCH = int(time.time())
-		self.INTERVAL = 5
+		self.EPOCH = time.time()
+		self.INTERVAL = 1
 
 
 		
 		self.board = [[[] for _ in range(self.col)] for _ in range(self.row)]
+
+
+	def saveConfig(self):
+		pass
+
+	def addOnTime(self, soundName, x, y, ahead):
+		
+		current_time = time.time()		
+		e = 0.01
+		
+		while True:
+			t = time.time()
+			if abs( t - int(t) - ahead) <= e:
+				self.add(soundName, x, y, True)
+				break	
+
+
+
+
+	def addLater(self, soundName, x, y, ahead):
+		t = threading.Thread(target = self.addOnTime, args = [soundName, x, y, ahead])
+		t.start()
 
 	def broadcast(self, x, y, sound, op):
 		ahead = sound.ahead
@@ -108,7 +130,8 @@ class MusicBoard:
 
 
 	def getRelativeTime(self):
-		return (int(time.time()) - self.EPOCH) % self.INTERVAL
+		t = time.time()
+		return t - int(t)
 
 	def getCellInfo(self, x, y):
 		
@@ -134,6 +157,7 @@ class MusicBoard:
 	def delete(self, x, y,id = None):
 		''' deletes the latest instance of sound on that
 				grid'''
+		
 		if(len(self.board[x][y]) == 0):
 			return
 
@@ -148,20 +172,24 @@ class MusicBoard:
 
 
 
-	def add(self, soundName, x, y):
+	def add(self, soundName, x, y, broadcasted = False):
 
 		# get relative time from epoch
-		ahead = self.getRelativeTime()
+		
 
 		vol, dur = self.getCellInfo(x, y)
 
 		id = self.getFreeId()
 
+		
+		ahead = self.getRelativeTime()
+
 		sound = Sound(id, soundName, ahead, dur, vol)
 		
 		self.board[x][y].append(sound)
 
-		self.broadcast(x, y, sound, "add")
+		if not broadcasted:	
+			self.broadcast(x, y, sound, "add")
 
 		self.play(sound)
 
