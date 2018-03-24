@@ -17,7 +17,7 @@ def client_receive(client_socket,client_address,q):
 	while True:
 		print("trying to receive")
 		message = utils.receive_message(client_socket)
-
+		print(message)
 		with send_lock:
 			for qu in send_queues:
 				if qu is not q:

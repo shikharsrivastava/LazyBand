@@ -1,7 +1,7 @@
 import socket
 
 
-HOST = '127.0.0.1'
+HOST = '192.168.43.62'
 PORT = 8400
 
 def send_data(sock,data):

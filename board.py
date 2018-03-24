@@ -115,10 +115,10 @@ class MusicBoard:
 				"ahead": ahead
 			})
 
-		utils.send_message(self.socket, message) 
+		utils.send_message(self.sock, message) 
 
 	def receive(self):
-		message = utils.receive_message(self.socket)
+		message = utils.receive_message(self.sock)
 		data = json.loads(message)
 
 		if(data['op'] == 'add'):
@@ -157,7 +157,7 @@ class MusicBoard:
 	def delete(self, x, y,id = None):
 		''' deletes the latest instance of sound on that
 				grid'''
-		
+
 		if(len(self.board[x][y]) == 0):
 			return
 
@@ -198,14 +198,8 @@ if __name__ == '__main__':
 	# row, col, minFreq, maxFreq, minAmp, maxAmp
 	b = MusicBoard(5, 5, 0.5, 1.5, 0.5, 1)
 
-	b.add('./sounds/drum.wav', 2, 0)
-	b.add('./sounds/piano.wav', 2,1)
-	b.add('./sounds/drum.wav', 2, 2)
-	b.add('./sounds/piano.wav', 3, 3)
-	b.add('./sounds/drum.wav', 1, 4)
-	b.add('./sounds/piano.wav', 4,2)
-	b.add('./sounds/drum.wav', 1, 1)
-	b.add('./sounds/piano.wav', 2, 3)
+	b.add('./sounds/High-Agogo.wav', 2, 0)
+	
 
 	while True:
 		pass
