@@ -100,8 +100,11 @@ if __name__ == '__main__':
 
                 if grid_type == 1:
                     if not cur_track:
-                        lazyband_board.delete(x,y)
-                        continue
+                        if len(lazyband_board.board[x][y]) > 0:
+                            id = lazyband_board.board[x][y][-1].id
+                            lazyband_board.delete(x,y, id)
+                            continue
+
                     print('adding %s to %d, %d'% (cur_track, x, y))
                     lazyband_board.add(os.path.join('sounds', cur_track), x, y)
                     cur_track = None

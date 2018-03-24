@@ -76,8 +76,6 @@ class MusicBoard:
 		self.EPOCH = time.time()
 		self.INTERVAL = 1
 
-
-		
 		self.board = [[[] for _ in range(self.col)] for _ in range(self.row)]
 
 
@@ -123,17 +121,18 @@ class MusicBoard:
 		utils.send_message(self.sock, message) 
 
 	def receive(self):
-		message = utils.receive_message(self.sock)
-		data = json.loads(message)
-		print("received")
-		print(message)
+		while True:
+			message = utils.receive_message(self.sock)
+			data = json.loads(message)
+			print("received")
+			print(message)
 
-		if(data['op'] == 'add'):
-			self.addLater(data['name'], data['x'], data['y'], data['ahead'])
-		elif data['op'] == 'del':
-			self.delete(data['x'], data['y'], data['id'])
-		else:
-			print("lode lag gye ")
+			if(data['op'] == 'add'):
+				self.addLater(data['name'], data['x'], data['y'], data['ahead'])
+			elif data['op'] == 'del':
+				self.delete(data['x'], data['y'], data['id'])
+			else:
+				print("lode lag gye ")
 
 
 	def getRelativeTime(self):
@@ -161,7 +160,7 @@ class MusicBoard:
 	def getFreeId(self):
 		return self.freeIds.pop()
 
-	def delete(self, x, y,id = None):
+	def delete(self, x, y, id):
 		''' deletes the latest instance of sound on that
 				grid'''
 
@@ -200,7 +199,7 @@ class MusicBoard:
 			self.broadcast(x, y, sound, "add")
 
 		self.play(sound)
-
+		return id
 
 if __name__ == '__main__':
 	# row, col, minFreq, maxFreq, minAmp, maxAmp
