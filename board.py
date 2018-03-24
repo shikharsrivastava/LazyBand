@@ -2,6 +2,10 @@
 import time
 import pygame
 import numpy
+import utils
+import sockets
+import threading
+import json
 
 pygame.mixer.init()
 pygame.mixer.set_num_channels(100)
@@ -47,6 +51,7 @@ class Sound:
 
 	# channelId, name, 
 
+
 class MusicBoard:
 
 	def __init__(self,row, col, minFreq, maxFreq, minAmp, maxAmp):
@@ -62,17 +67,48 @@ class MusicBoard:
 
 		self.freeIds = set([i for i in range(100)])
 
+		self.sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+		self.sock.connect((utils.HOST,utils.PORT))
+
+		self.t = threading.Thread(target = self.receive)
+		self.t.start()
+
 		self.EPOCH = int(time.time())
 		self.INTERVAL = 5
+
+
 		
 		self.board = [[[] for _ in range(self.col)] for _ in range(self.row)]
 
-	def broadcast(self):
-		pass
+	def broadcast(self, x, y, sound, op):
+		ahead = sound.ahead
+		name = sound.soundName
 
-		# todo
+		message = json.dumps({
+				"x": x,
+				"y": y,
+				"op": op,
+				"id": sound.id,
+				"name": name,
+				"ahead": ahead
+			})
+
+		utils.send_message(self.socket, message) 
+
+	def receive(self):
+		message = utils.receive_message(self.socket)
+		data = json.loads(message)
+
+		if(data['op'] == 'add'):
+			self.addLater(data['name'], data['x'], data['y'], data['ahead'])
+		elif data['op'] == 'del':
+			self.delete(data['x'], data['y'], data['id'])
+		else:
+			print("lode lag gye ")
+
+
 	def getRelativeTime(self):
-		return 1
+		return (int(time.time()) - self.EPOCH) % self.INTERVAL
 
 	def getCellInfo(self, x, y):
 		
@@ -95,6 +131,22 @@ class MusicBoard:
 	def getFreeId(self):
 		return self.freeIds.pop()
 
+	def delete(self, x, y,id = None):
+		''' deletes the latest instance of sound on that
+				grid'''
+		if(len(self.board[x][y]) == 0):
+			return
+
+		sound = self.board[x][y].pop()
+		pygame.mixer.Channel(sound.id).stop()
+
+		self.broadcast(sound, "del")
+
+		self.freeIds.add(sound.id)
+
+
+
+
 
 	def add(self, soundName, x, y):
 
@@ -109,7 +161,7 @@ class MusicBoard:
 		
 		self.board[x][y].append(sound)
 
-		#self.broadcast(sound)
+		self.broadcast(x, y, sound, "add")
 
 		self.play(sound)
 

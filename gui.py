@@ -2,8 +2,9 @@ import pygame,sys
 from pygame.locals import *
 import random
 import time
-from math import log
-import subprocess
+import os
+
+from board import *
 
 pygame.init()
 DISPLAY = pygame.display.set_mode((1200,650))
@@ -37,7 +38,7 @@ SOUND_EX = SOUND_INX + SOUND_BOARD_LENGTH
 DISPLAY.fill(BLACK)
 GRID_ROW = 5
 GRID_COLUMN = 5
-SOUND_ROW = 3
+SOUND_ROW = 5
 SOUND_COLUMN = 2
 
 
@@ -73,14 +74,18 @@ def get_position(mx, my):
     elif SOUND_INX <= mx <= SOUND_EX and INITIAL_Y <= my <= ENDING_Y:
         return 2, get_board_position(SOUND_INX, INITIAL_Y, SOUND_EX, ENDING_Y, SOUND_ROW, SOUND_COLUMN, mx, my)
     else:
-        return 3, "chud lo"
+        return 3, "chud lo", 'gaand marao'
 
 
 if __name__ == '__main__':
  
+    lazyband_board = MusicBoard(GRID_ROW, GRID_COLUMN, 0.5, 2.0, 0.5, 1.0)
     draw_board()
     #draw_sounds(2)
-                
+
+    cur_track = None
+    sounds_list = sorted([name for name in os.listdir('sounds')])
+    print(sounds_list)
     while True:
         pygame.display.update()
         for event in pygame.event.get():
@@ -89,6 +94,28 @@ if __name__ == '__main__':
                 sys.exit(0)
             elif event.type==MOUSEBUTTONDOWN:
                 mousePos=list(pygame.mouse.get_pos())
-                print(mousePos)
-                print(get_position(mousePos[0], mousePos[1]))
+                grid_type, (x, y) = get_position(mousePos[0], mousePos[1])
+                # TODO states
+                
+
+                if grid_type == 1:
+                    if not cur_track:
+                        lazyband_board.delete(x,y)
+                        continue
+                    print('adding %s to %d, %d'% (cur_track, x, y))
+                    lazyband_board.add(os.path.join('sounds', cur_track), x, y)
+                    cur_track = None
+
+                elif grid_type == 2:
+                    trackid = x * SOUND_COLUMN + y
+                    cur_track = sounds_list[trackid]
+                    print('selected %s!' % cur_track)
+
+                else:
+                    print('whoopsie')
+                    cur_track = None
+
+
+
+
 
