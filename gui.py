@@ -95,6 +95,7 @@ if __name__ == '__main__':
             elif event.type==MOUSEBUTTONDOWN:
                 mousePos=list(pygame.mouse.get_pos())
                 grid_type, (x, y) = get_position(mousePos[0], mousePos[1])
+                print("grid type = ", str(grid_type))
                 # TODO states
                 
 
@@ -103,7 +104,7 @@ if __name__ == '__main__':
                         if len(lazyband_board.board[x][y]) > 0:
                             id = lazyband_board.board[x][y][-1].id
                             lazyband_board.delete(x,y, id)
-                            continue
+                        continue
 
                     print('adding %s to %d, %d'% (cur_track, x, y))
                     lazyband_board.add(os.path.join('sounds', cur_track), x, y)

@@ -130,7 +130,7 @@ class MusicBoard:
 			if(data['op'] == 'add'):
 				self.addLater(data['name'], data['x'], data['y'], data['ahead'])
 			elif data['op'] == 'del':
-				self.delete(data['x'], data['y'], data['id'])
+				self.delete(data['x'], data['y'], data['id'], True)
 			else:
 				print("lode lag gye ")
 
@@ -160,7 +160,7 @@ class MusicBoard:
 	def getFreeId(self):
 		return self.freeIds.pop()
 
-	def delete(self, x, y, id):
+	def delete(self, x, y, id, broadcasted = False):
 		''' deletes the latest instance of sound on that
 				grid'''
 
@@ -170,7 +170,8 @@ class MusicBoard:
 		sound = self.board[x][y].pop()
 		pygame.mixer.Channel(sound.id).stop()
 
-		self.broadcast(x, y, sound, "del")
+		if not broadcasted:
+			self.broadcast(x, y, sound, "del")
 
 		self.freeIds.add(sound.id)
 
