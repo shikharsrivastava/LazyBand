@@ -2,6 +2,7 @@
 import time
 import pygame
 import numpy
+from utils import *
 import utils
 import socket
 import threading
@@ -15,24 +16,24 @@ pygame.init()
 # Helper function
 def getResizedSound(sound, seconds):
 
-    frequency, bits, channels = pygame.mixer.get_init()
+		frequency, bits, channels = pygame.mixer.get_init()
 
-    # Determine silence value
-    silence = 0 if bits < 0 else (2**bits / 2) - 1
+		# Determine silence value
+		silence = 0 if bits < 0 else (2**bits / 2) - 1
 
-    # Get raw sample array of original sound
-    oldArray = pygame.sndarray.array(sound)
+		# Get raw sample array of original sound
+		oldArray = pygame.sndarray.array(sound)
 
-    # Create silent sample array with desired length
-    newSampleCount = int(seconds * frequency)
-    newShape = (newSampleCount,) + oldArray.shape[1:]
-    newArray = numpy.full(newShape, silence, dtype=oldArray.dtype)
+		# Create silent sample array with desired length
+		newSampleCount = int(seconds * frequency)
+		newShape = (newSampleCount,) + oldArray.shape[1:]
+		newArray = numpy.full(newShape, silence, dtype=oldArray.dtype)
 
-    # Copy original sound to the beginning of the
-    # silent array, clipping the sound if it is longer
-    newArray[:oldArray.shape[0]] = oldArray[:newArray.shape[0]]
+		# Copy original sound to the beginning of the
+		# silent array, clipping the sound if it is longer
+		newArray[:oldArray.shape[0]] = oldArray[:newArray.shape[0]]
 
-    return pygame.mixer.Sound(newArray)
+		return pygame.mixer.Sound(newArray)
 
 
 
@@ -80,12 +81,29 @@ class MusicBoard:
 		self.board = [[[] for _ in range(self.col)] for _ in range(self.row)]
 
 
+	def makeLine(self, x, y, color):
+		print("drawing on ", x, y)
+		x_side = (ENDING_X - INITIAL_X)/GRID_COLUMN
+		y_side = (ENDING_Y - INITIAL_Y)/GRID_ROW
+		line_side = y_side / LINE_COUNT
+
+		count = len(self.board[x][y])
+
+		x_cord_start = INITIAL_X + y * x_side
+		y_cord_start = INITIAL_Y + x * y_side + line_side*count
+
+		x_cord_end = x_cord_start + x_side
+		y_cord_end = y_cord_start 
+
+		pygame.draw.line(DISPLAY, color, (x_cord_start, y_cord_start), (x_cord_end, y_cord_end))
+
+
 	def saveConfig(self):
 		pass
 
 	def addOnTime(self, soundName, x, y, ahead):
 		
-		current_time = time.time()		
+		current_time = time.time()    
 		e = 0.01
 		
 		print("In add time")
@@ -95,7 +113,7 @@ class MusicBoard:
 			if abs( t - int(t) - ahead) <= e:
 				self.add(soundName, x, y, True)
 				print("added")
-				break	
+				break 
 
 
 
@@ -169,6 +187,8 @@ class MusicBoard:
 		if(len(self.board[x][y]) == 0):
 			return
 
+		self.makeLine(x, y, BLACK)
+
 		sound = self.board[x][y].pop()
 		pygame.mixer.Channel(sound.id).stop()
 
@@ -198,7 +218,9 @@ class MusicBoard:
 		
 		self.board[x][y].append(sound)
 
-		if not broadcasted:	
+		self.makeLine(x, y, WHITE)
+
+		if not broadcasted: 
 			self.broadcast(x, y, sound, "add")
 
 		self.play(sound)

@@ -3,66 +3,15 @@ from pygame.locals import *
 import random
 import time
 import os
-
+from utils import *
+import utils
 from board import *
 
-pygame.init()
-DISPLAY = pygame.display.set_mode((1360,650))
-pygame.display.set_caption('LazyBand')
-BLACK = (0,0,0)
-WHITE = (255, 255, 255)
-RED= (255,0,0)
-GREEN = (0, 255,0)
-BLUE = (0,0, 255)
-AQUA=(0, 255, 255)
-FUCHSIA=(255,0, 255)
-GRAY=(128, 128, 128)
-OLIVE=(128, 128,0)
-PURPLE=(128,0, 128)
-YELLOW=(255, 255,0)
-TEAL=( 0, 128, 128)
 
-
-
-INITIAL_X=120
-INITIAL_Y=80
-ENDING_X = 800
-ENDING_Y = 600
-LINE_COUNT = 4
-
-SOUND_BOARD_LENGTH = 350
-GAP = 50
-
-SOUND_INX = ENDING_X + GAP
-SOUND_EX = SOUND_INX + SOUND_BOARD_LENGTH
-
-DISPLAY.fill(BLACK)
-GRID_ROW = 5
-GRID_COLUMN = 5
 sound_row = 5
 sound_column = 2
-PLAY_CHANNEL = 101
 
-
-def drawLine(initial, final, color):
-    pygame.draw.line(DISPLAY, color, initial, final)
-
-def makeLine(x, y, board, color):
-
-    print("drawing on ", x, y)
-    x_side = (ENDING_X - INITIAL_X)/GRID_COLUMN
-    y_side = (ENDING_Y - INITIAL_Y)/GRID_ROW
-    line_side = y_side / LINE_COUNT
-
-    count = len(board.board[x][y])
-
-    x_cord_start = INITIAL_X + y * x_side
-    y_cord_start = INITIAL_Y + x * y_side + line_side*count
-
-    x_cord_end = x_cord_start + x_side
-    y_cord_end = y_cord_start 
-
-    drawLine((x_cord_start, y_cord_start), (x_cord_end, y_cord_end), color)
+    
 
 
 def draw_grid(row, col, inx, iny, endx, endy, textName=""):
@@ -173,16 +122,13 @@ if __name__ == '__main__':
                     if not cur_track:
                         if len(lazyband_board.board[x][y]) > 0:
                             id = lazyband_board.board[x][y][-1].id
-                            makeLine(x, y, lazyband_board, BLACK)
                             lazyband_board.delete(x,y, id)
                         continue
 
                     print('adding %s to %d, %d'% (cur_track, x, y))
                     lazyband_board.add(os.path.join('sounds', cur_track), x, y)
 
-
                     print("CAlling makeline")
-                    makeLine(x, y, lazyband_board, WHITE)
                     cur_track = None
 
                 elif grid_type == 2:
