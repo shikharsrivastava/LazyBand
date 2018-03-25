@@ -38,8 +38,9 @@ SOUND_EX = SOUND_INX + SOUND_BOARD_LENGTH
 DISPLAY.fill(BLACK)
 GRID_ROW = 5
 GRID_COLUMN = 5
-SOUND_ROW = 5
-SOUND_COLUMN = 2
+sound_row = 5
+sound_column = 2
+PLAY_CHANNEL = 101
 
 
 def draw_grid(row, col, inx, iny, endx, endy):
@@ -56,7 +57,7 @@ def draw_grid(row, col, inx, iny, endx, endy):
 
 def draw_board():
     draw_grid(GRID_ROW, GRID_COLUMN, INITIAL_X, INITIAL_Y, ENDING_X, ENDING_Y)
-    draw_grid(SOUND_ROW, SOUND_COLUMN, SOUND_INX, INITIAL_Y, SOUND_EX, ENDING_Y)  
+    draw_grid(sound_row, sound_column, SOUND_INX, INITIAL_Y, SOUND_EX, ENDING_Y)  
 
 
 def get_board_position(inx, iny, endx, endy, row, col, mx, my):
@@ -72,20 +73,38 @@ def get_position(mx, my):
     if INITIAL_X <= mx <= ENDING_X and INITIAL_Y <= my <= ENDING_Y:
         return 1, get_board_position(INITIAL_X, INITIAL_Y, ENDING_X, ENDING_Y,  GRID_ROW, GRID_COLUMN, mx, my)
     elif SOUND_INX <= mx <= SOUND_EX and INITIAL_Y <= my <= ENDING_Y:
-        return 2, get_board_position(SOUND_INX, INITIAL_Y, SOUND_EX, ENDING_Y, SOUND_ROW, SOUND_COLUMN, mx, my)
+        return 2, get_board_position(SOUND_INX, INITIAL_Y, SOUND_EX, ENDING_Y, sound_row, sound_column, mx, my)
     else:
-        return 3, "chud lo", 'gaand marao'
+        return 3, ("chud lo", 'gaand marao')
+
+
+def draw_back():
+    global sound_row, sound_column
+    cat_list = sorted([name for name in os.listdir('sounds')])
+    sound_row = len(cat_list) // 2
+    sound_column = 2
+    pygame.draw.rect(DISPLAY, BLACK, (SOUND_INX, INITIAL_Y, SOUND_EX - SOUND_INX, ENDING_Y - INITIAL_Y))
+    draw_grid(sound_row, sound_column, SOUND_INX, INITIAL_Y, SOUND_EX, ENDING_Y) 
+
+
+def preview_track(track):
+    sound = pygame.mixer.Sound('sounds/'+track)
+    pygame.mixer.Channel(PLAY_CHANNEL).play(sound) 
+
 
 
 if __name__ == '__main__':
  
     lazyband_board = MusicBoard(GRID_ROW, GRID_COLUMN, 0.3, 1.25, 0.2, 1.0)
-    draw_board()
-    #draw_sounds(2)
-
     cur_track = None
-    sounds_list = sorted([name for name in os.listdir('sounds')])
-    print(sounds_list)
+    cur_cat = None
+    cat_list = sorted([name for name in os.listdir('sounds')])
+    sound_row = len(cat_list) // 2
+    sound_column = 2
+    draw_board()
+
+    # board drawn now
+
     while True:
         pygame.display.update()
         for event in pygame.event.get():
@@ -111,15 +130,22 @@ if __name__ == '__main__':
                     cur_track = None
 
                 elif grid_type == 2:
-                    trackid = x * SOUND_COLUMN + y
-                    cur_track = sounds_list[trackid]
-                    print('selected %s!' % cur_track)
+                    if not cur_cat: 
+                        cat_id = x * sound_column + y
+                        cur_cat = cat_list[cat_id]
+                        sounds_list = sorted([name for name in os.listdir('sounds/%s' % cur_cat)])
+                        sound_row = len(sounds_list) // 3
+                        sound_column = 3
+                        pygame.draw.rect(DISPLAY, BLACK, (SOUND_INX, INITIAL_Y, SOUND_EX - SOUND_INX, ENDING_Y - INITIAL_Y))
+                        draw_grid(sound_row, sound_column, SOUND_INX, INITIAL_Y, SOUND_EX, ENDING_Y) 
+                    else:
+                        trackid = x * sound_column + y
+                        cur_track = cur_cat + '/' + sounds_list[trackid]
+                        preview_track(cur_track)
+                        print('selected %s!' % cur_track)
 
                 else:
                     print('whoopsie')
                     cur_track = None
-
-
-
-
-
+                    cur_cat = None
+                    draw_back()
