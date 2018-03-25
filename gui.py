@@ -7,7 +7,7 @@ import os
 from board import *
 
 pygame.init()
-DISPLAY = pygame.display.set_mode((1200,650))
+DISPLAY = pygame.display.set_mode((1360,650))
 pygame.display.set_caption('LazyBand')
 BLACK = (0,0,0)
 WHITE = (255, 255, 255)
@@ -28,8 +28,9 @@ INITIAL_X=120
 INITIAL_Y=80
 ENDING_X = 800
 ENDING_Y = 600
+LINE_COUNT = 4
 
-SOUND_BOARD_LENGTH = 200
+SOUND_BOARD_LENGTH = 350
 GAP = 50
 
 SOUND_INX = ENDING_X + GAP
@@ -41,12 +42,39 @@ GRID_COLUMN = 5
 sound_row = 5
 sound_column = 2
 PLAY_CHANNEL = 101
-FONT = pygame.font.SysFont("comicsansms", 10)
 
-def draw_grid(row, col, inx, iny, endx, endy):
+
+def drawLine(initial, final, color):
+    pygame.draw.line(DISPLAY, color, initial, final)
+
+def makeLine(x, y, board, color):
+
+    print("drawing on ", x, y)
+    x_side = (ENDING_X - INITIAL_X)/GRID_COLUMN
+    y_side = (ENDING_Y - INITIAL_Y)/GRID_ROW
+    line_side = y_side / LINE_COUNT
+
+    count = len(board.board[x][y])
+
+    x_cord_start = INITIAL_X + y * x_side
+    y_cord_start = INITIAL_Y + x * y_side + line_side*count
+
+    x_cord_end = x_cord_start + x_side
+    y_cord_end = y_cord_start 
+
+    drawLine((x_cord_start, y_cord_start), (x_cord_end, y_cord_end), color)
+
+
+def draw_grid(row, col, inx, iny, endx, endy, textName=""):
     x_side = (endx - inx)/(col)
     y_side = (endy - iny)/(row)
     #print(x_side, y_side)
+    font = pygame.font.SysFont("comicsansms", 15)
+    text_cord_x = inx + (endx - inx) // 2
+    text_cord_y = iny - 30
+    text = font.render(textName, True, WHITE)
+    DISPLAY.blit(text, (text_cord_x - text.get_width() // 2, text_cord_y - text.get_height() // 2))
+
     for i in range(col):
         curx = inx + i * x_side
         for j in range(row):
@@ -56,8 +84,10 @@ def draw_grid(row, col, inx, iny, endx, endy):
 
 
 def draw_board():
-    draw_grid(GRID_ROW, GRID_COLUMN, INITIAL_X, INITIAL_Y, ENDING_X, ENDING_Y)
-    draw_grid(sound_row, sound_column, SOUND_INX, INITIAL_Y, SOUND_EX, ENDING_Y)  
+    board_text = "Music Box"
+    sound_text = "Sounds"
+    draw_grid(GRID_ROW, GRID_COLUMN, INITIAL_X, INITIAL_Y, ENDING_X, ENDING_Y, board_text)
+    draw_grid(sound_row, sound_column, SOUND_INX, INITIAL_Y, SOUND_EX, ENDING_Y, sound_text)  
 
 
 def get_board_position(inx, iny, endx, endy, row, col, mx, my):
@@ -78,16 +108,17 @@ def get_position(mx, my):
         return 3, ("chud lo", 'gaand marao')
 
 def writeTextSound(dirName):
-     cat_list = sorted([name for name in os.listdir(dirName)])
+     cat_list = sorted([name for name in os.listdir(dirName)])[:40]
      side_x = (SOUND_EX - SOUND_INX) / sound_column
      side_y = (ENDING_Y - INITIAL_Y) / sound_row
+     font = pygame.font.SysFont("comicsansms", int(side_x) // 10)
      for y in range(sound_row):
         for x in range(sound_column):
             centre_cord_y = INITIAL_Y + (y * side_y + side_y / 2)
             centre_cord_x = SOUND_INX + (x * side_x + side_x / 2)
             print(centre_cord_x, centre_cord_y)
             index = y * sound_column + x
-            text = FONT.render(cat_list[index], True, WHITE)
+            text = font.render(cat_list[index], True, WHITE)
             DISPLAY.blit(text, (centre_cord_x - text.get_width() // 2, centre_cord_y - text.get_height() // 2))
 
 
@@ -102,7 +133,8 @@ def draw_back():
     sound_row = len(cat_list) // 2
     sound_column = 2
     pygame.draw.rect(DISPLAY, BLACK, (SOUND_INX, INITIAL_Y, SOUND_EX - SOUND_INX, ENDING_Y - INITIAL_Y))
-    draw_grid(sound_row, sound_column, SOUND_INX, INITIAL_Y, SOUND_EX, ENDING_Y) 
+    draw_grid(sound_row, sound_column, SOUND_INX, INITIAL_Y, SOUND_EX, ENDING_Y)
+    writeTextSound('sounds')
 
 
 def preview_track(track):
@@ -141,18 +173,23 @@ if __name__ == '__main__':
                     if not cur_track:
                         if len(lazyband_board.board[x][y]) > 0:
                             id = lazyband_board.board[x][y][-1].id
+                            makeLine(x, y, lazyband_board, BLACK)
                             lazyband_board.delete(x,y, id)
                         continue
 
                     print('adding %s to %d, %d'% (cur_track, x, y))
                     lazyband_board.add(os.path.join('sounds', cur_track), x, y)
+
+
+                    print("CAlling makeline")
+                    makeLine(x, y, lazyband_board, WHITE)
                     cur_track = None
 
                 elif grid_type == 2:
                     if not cur_cat: 
                         cat_id = x * sound_column + y
                         cur_cat = cat_list[cat_id]
-                        sounds_list = sorted([name for name in os.listdir('sounds/%s' % cur_cat)])
+                        sounds_list = sorted([name for name in os.listdir('sounds/%s' % cur_cat)])[:40]
                         sound_row = len(sounds_list) // 3
                         sound_column = 3
                         pygame.draw.rect(DISPLAY, BLACK, (SOUND_INX, INITIAL_Y, SOUND_EX - SOUND_INX, ENDING_Y - INITIAL_Y))
