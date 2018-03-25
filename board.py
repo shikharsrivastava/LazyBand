@@ -2,7 +2,7 @@
 import time
 import pygame
 import numpy
-from utils import *
+from common import *
 import utils
 import socket
 import threading

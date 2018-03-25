@@ -3,7 +3,7 @@ from pygame.locals import *
 import random
 import time
 import os
-from utils import *
+from common import *
 import utils
 from board import *
 
