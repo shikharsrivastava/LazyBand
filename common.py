@@ -21,15 +21,29 @@ pygame.display.set_caption('LazyBand')
 DISPLAY.fill(BLACK)
 
 
+# The volumes for grid in fractions (0 - 1)
+MIN_VOLUME = 0.2
+MAX_VOLUME = 1.0
 
 
+# The loop durations in seconds
+MIN_DURATION = 0.3
+MAX_DURATION = 2
+
+
+# The music board dimensions
+GRID_ROW = 8
+GRID_COLUMN = 8
+
+# The maximum sounds per cell
+LINE_COUNT = 4
 
 
 INITIAL_X=120
 INITIAL_Y=80
 ENDING_X = 800
 ENDING_Y = 600
-LINE_COUNT = 4
+
 
 SOUND_BOARD_LENGTH = 350
 GAP = 50
@@ -38,5 +52,3 @@ SOUND_INX = ENDING_X + GAP
 SOUND_EX = SOUND_INX + SOUND_BOARD_LENGTH
 PLAY_CHANNEL = 101
 
-GRID_ROW = 8
-GRID_COLUMN = 8

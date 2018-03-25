@@ -94,7 +94,7 @@ def preview_track(track):
 
 if __name__ == '__main__':
  
-    lazyband_board = MusicBoard(GRID_ROW, GRID_COLUMN, 0.3, 1.25, 0.2, 1.0)
+    lazyband_board = MusicBoard(GRID_ROW, GRID_COLUMN, MIN_DURATION, MAX_DURATION, MIN_VOLUME, MAX_VOLUME)
     cur_track = None
     cur_cat = None
     cat_list = sorted([name for name in os.listdir('sounds')])

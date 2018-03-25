@@ -10,7 +10,7 @@ import json
 
 pygame.mixer.init()
 pygame.font.init()
-pygame.mixer.set_num_channels(150)
+pygame.mixer.set_num_channels(1000)
 pygame.init()
 
 # Helper function
