@@ -41,17 +41,17 @@ GRID_COLUMN = 5
 sound_row = 5
 sound_column = 2
 PLAY_CHANNEL = 101
-
+FONT = pygame.font.SysFont("comicsansms", 10)
 
 def draw_grid(row, col, inx, iny, endx, endy):
     x_side = (endx - inx)/(col)
     y_side = (endy - iny)/(row)
-    print(x_side, y_side)
+    #print(x_side, y_side)
     for i in range(col):
         curx = inx + i * x_side
         for j in range(row):
             cury = iny + j * y_side
-            print(curx, cury)
+            #print(curx, cury)
             pygame.draw.rect(DISPLAY, WHITE, (curx, cury, x_side, y_side), 2)
 
 
@@ -76,6 +76,24 @@ def get_position(mx, my):
         return 2, get_board_position(SOUND_INX, INITIAL_Y, SOUND_EX, ENDING_Y, sound_row, sound_column, mx, my)
     else:
         return 3, ("chud lo", 'gaand marao')
+
+def writeTextSound(dirName):
+     cat_list = sorted([name for name in os.listdir(dirName)])
+     side_x = (SOUND_EX - SOUND_INX) / sound_column
+     side_y = (ENDING_Y - INITIAL_Y) / sound_row
+     for y in range(sound_row):
+        for x in range(sound_column):
+            centre_cord_y = INITIAL_Y + (y * side_y + side_y / 2)
+            centre_cord_x = SOUND_INX + (x * side_x + side_x / 2)
+            print(centre_cord_x, centre_cord_y)
+            index = y * sound_column + x
+            text = FONT.render(cat_list[index], True, WHITE)
+            DISPLAY.blit(text, (centre_cord_x - text.get_width() // 2, centre_cord_y - text.get_height() // 2))
+
+
+
+
+
 
 
 def draw_back():
@@ -102,6 +120,7 @@ if __name__ == '__main__':
     sound_row = len(cat_list) // 2
     sound_column = 2
     draw_board()
+    writeTextSound('sounds')
 
     # board drawn now
 
@@ -137,7 +156,8 @@ if __name__ == '__main__':
                         sound_row = len(sounds_list) // 3
                         sound_column = 3
                         pygame.draw.rect(DISPLAY, BLACK, (SOUND_INX, INITIAL_Y, SOUND_EX - SOUND_INX, ENDING_Y - INITIAL_Y))
-                        draw_grid(sound_row, sound_column, SOUND_INX, INITIAL_Y, SOUND_EX, ENDING_Y) 
+                        draw_grid(sound_row, sound_column, SOUND_INX, INITIAL_Y, SOUND_EX, ENDING_Y)
+                        writeTextSound('sounds/%s' % cur_cat) 
                     else:
                         trackid = x * sound_column + y
                         cur_track = cur_cat + '/' + sounds_list[trackid]

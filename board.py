@@ -8,6 +8,7 @@ import threading
 import json
 
 pygame.mixer.init()
+pygame.font.init()
 pygame.mixer.set_num_channels(150)
 pygame.init()
 
