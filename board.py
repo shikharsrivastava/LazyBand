@@ -49,6 +49,12 @@ class Sound:
 		sound = pygame.mixer.Sound(self.soundName) 
 		self.sound = getResizedSound(sound, self.duration)
 
+	def to_json(self):
+		return {
+			'name': self.soundName,
+			'ahead': self.ahead,
+		}
+
 
 
 	# channelId, name, 
@@ -99,7 +105,27 @@ class MusicBoard:
 
 
 	def saveConfig(self):
-		pass
+		config = []
+		for i in range(self.row):
+			for j in range(self.col):
+				for sound in self.board[i][j]:
+					config.append({
+						'x': i,
+						'y': j,
+						'sound': sound.to_json(),
+					})
+		with open('exports/%s.json' % (int(time.time())), 'w') as f:
+			f.write(json.dumps(config))
+
+
+	def loadConfig(self, filename):
+		with open(filename) as f:
+			config = json.load(f)
+			for entry in config:
+				x = entry['x']
+				y = entry['y']
+				self.addLater(entry['sound']['name'], x, y, entry['sound']['ahead'])
+
 
 	def addOnTime(self, soundName, x, y, ahead):
 		

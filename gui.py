@@ -152,3 +152,10 @@ if __name__ == '__main__':
                     cur_track = None
                     cur_cat = None
                     draw_back()
+            elif event.type == pygame.KEYDOWN:
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_s]:
+                    lazyband_board.saveConfig()
+                elif keys[pygame.K_l]:
+                    filename = sorted(os.listdir('exports'))[-1]
+                    lazyband_board.loadConfig('exports/%s' % filename)
